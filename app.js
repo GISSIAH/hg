@@ -12,9 +12,30 @@ app.get("/csv", (req, res) => {
 
     csv.mapFile('./spatial.csv', function (err, data) {
 
-       data.forEach(element => {
-           axios.get()
-       });
+       axios.get('https://alpha-synin.herokuapp.com/places/districts').then((result)=>{
+           var userObjs=[]
+           data.forEach(element => {
+               result.data.forEach(district=>{
+                   if(element.district.toLowerCase() === district.district.toLowerCase() ){
+                        let csvObj = {
+                            properties:{
+                                name:element.name,
+                            district:element.district,
+                            sale:element.sale,
+                            },
+                            geometry:district.geometry
+                            
+                        }
+
+                        userObjs.push(csvObj)
+
+                   }
+               })
+           });
+           res.send(userObjs)
+       }).catch((err)=>{
+           console.log(err);
+       })
 
     });
 })
